@@ -1,5 +1,7 @@
 # macros de corte
 
+> [Readme na versão PT-BR](https://github.com/nicolasaigner/klipper-macros/blob/develop/README.pt.md)
+
 Esta é uma coleção de macros para o[Cortando firmware da impressora 3D](https://github.com/Klipper3d/klipper). EU
 criei originalmente este repositório apenas para ter um conjunto consistente de macros compartilhadas
 entre minhas próprias impressoras 3D. Mas como os achei úteis, pensei em outras
@@ -157,7 +159,7 @@ modificações provavelmente quebrarão as coisas de maneiras muito inesperadas.
 
 > **Observação:**Se você tem um`[homing_override]`seção que você precisará atualizar
 > qualquer`G28`comandos na parte gcode para usar`G28.6245197`em vez disso (que é
-> a versão renomeada do integrado do Klipper`G28`). Deixar de fazer isso
+> a versão renomeada do integrado do Klipper`G28`). Não fazer isso
 > causa`G28`comandos para errar com a mensagem**_Macro G28 chamada
 > recursivamente_**.
 
@@ -280,7 +282,7 @@ problemas:
     a posição atual do bico, que incluirá o Z-hop se o bico estiver
     atualmente levantada. Isso significa que os gatilhos do gcode baseados em altura podem ser acionados antes
     esperado.
--   Cura's**Inserir na mudança de camada**dispara o`After`gatilho e depois o`Before`gatilho (ou seja, antes ou depois do_camada_, versus antes ou depois do_mudança de camada_). Essas macros e o PrusaSlicer fazem o oposto, que é
+-   Cura's**Inserir na mudança de camada**dispara o`After`gatilho e depois o`Before`gatilho (ou seja, antes ou depois do_layer_, versus antes ou depois do_mudança de camada_). Essas macros e o PrusaSlicer fazem o oposto, que é
     algo para ter em mente se você está acostumado com a forma como o Cura faz isso. Observe que estes
     macros usam um**Inserir na mudança de camada**script para forçar`LAYER`Comente
     geração, mas isso não afeta a ordem do gatilho.
@@ -690,13 +692,13 @@ argumentos.
 
 > **Observação:**Se você tem um`[homing_override]`seção que você precisará atualizar
 > qualquer`G28`comandos na parte gcode para usar`G28.6245197`em vez disso (que é
-> a versão renomeada do integrado do Klipper`G28`). Deixar de fazer isso
+> a versão renomeada do integrado do Klipper`G28`). Não fazer isso
 > causa`G28`comandos para errar com a mensagem**_Macro G28 chamada
 > recursivamente_**.
 
 #### `LAZY_HOME`
 
-Inicia os eixos especificados; por padrão, omite quaisquer eixos que já estejam na posição inicial.
+Aloja os eixos especificados; por padrão, omite quaisquer eixos que já estejam na posição inicial.
 
 -   `AXES`_(padrão: XYZ)_- Lista de eixos para casa.
 -   `LAZY`_(padrão: 1)_- Omite eixos já referenciados do procedimento de localização.
@@ -757,7 +759,7 @@ Estaciona o cabeçote da ferramenta.
 -   `P`_(padrão:`2`)_- Modo de estacionamento
     -   `P=0`- Se a posição Z atual for menor que o estacionamento Z, o bico será levantado
         para atingir a altura do parque Z
-    -   `P=1`- Não importa a posição Z atual, o bico será levantado/abaixado para
+    -   `P=1`- Não importa a posição Z atual, o bocal será levantado/abaixado para
         atingir a altura do parque Z.
     -   `P=2`- A altura do bico será aumentada pela quantidade de Z-park, mas nunca irá
         acima do limite de altura Z da máquina.
@@ -869,7 +871,7 @@ Estas são as opções de personalização que você pode adicionar ao seu`[gcod
     porcentagem de fluxo).
 
 -   `variable_start_purge_clearance`_(padrão: 5,0)_- Distância (em milímetros)
-    entre as linhas de purga e a área de impressão (se um`start_purge_length`é
+    entre as linhas de purga e a área de impressão (se for`start_purge_length`é
     oferecido).
 
 -   `variable_start_purge_length`_(padrão: 0,0)_- Comprimento do filamento (em
@@ -917,7 +919,7 @@ Aqui está um esqueleto de um`PRINT_START`substituir o wrapper:
 
       # Put macro code here to run after PRINT_START but before the print gcode
 
-> **Note:**Você pode usar esse mesmo padrão para agrupar outras macros para
+> **Observação:**Você pode usar esse mesmo padrão para agrupar outras macros para
 >   leve em conta personalizações específicas para sua impressora. Por exemplo. Se você tem um
 >   sonda acoplável que você pode optar por embrulhar`BED_MESH_CALIBRATE`com o
 >   comandos de encaixe/desencaixe apropriados.
@@ -926,7 +928,7 @@ Aqui está um esqueleto de um`PRINT_START`substituir o wrapper:
 
 O fatiador recomendado inicia quebras de gcode`PRINT_START`nas fases abaixo.
 Esta abordagem permite pausar ou cancelar e inserir gcode personalizado
-entre as fases (por exemplo, para definir LEDs de status, implantar/encaixar sondas, carregar filamento).
+entre as fases (por exemplo, para definir LEDs de status, implantar/acoplar sondas, carregar filamento).
 As fases são descritas na ordem abaixo:
 
 -   `_PRINT_START_PHASE_INIT`- Inicializa o`PRINT_START`configurações e começa
