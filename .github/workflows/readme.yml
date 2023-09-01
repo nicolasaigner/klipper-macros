@@ -18,4 +18,4 @@ jobs:
       - name: Adding README - Português Brasileiro
         uses: dephraiim/translate-readme@main
         with:
-          LANG: pt-BR
+          LANG: pt
