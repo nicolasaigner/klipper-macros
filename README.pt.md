@@ -157,7 +157,7 @@ modificações provavelmente quebrarão as coisas de maneiras muito inesperadas.
 
 > **Observação:**Se você tem um`[homing_override]`seção que você precisará atualizar
 > qualquer`G28`comandos na parte gcode para usar`G28.6245197`em vez disso (que é
-> a versão renomeada do integrado do Klipper`G28`). Não fazer isso
+> a versão renomeada do integrado do Klipper`G28`). Deixar de fazer isso
 > causa`G28`comandos para errar com a mensagem**_Macro G28 chamada
 > recursivamente_**.
 
@@ -417,13 +417,13 @@ calibração (desde que`[bed_mesh]`seção é detectada em sua configuração).
 
 As seguintes opções de configuração adicionais estão disponíveis em[globals.cfg](globals.cfg#L5).
 
--   `variable_probe_mesh_padding`- Preenchimento extra ao redor do retângulo definido por`MESH_MIN` and `MESH_MAX`.
+-   `variable_probe_mesh_padding`- Preenchimento extra ao redor do retângulo definido por`MESH_MIN`e`MESH_MAX`.
 -   `variable_probe_min_count`- Número mínimo de sondas para sondagem parcial de um
     malha de cama.
 -   `variable_probe_count_scale`- Fator de escala para aumentar a contagem de sondas para
      sondas de leito parcial.
 
-> **Observação:**Veja o[seção opcional](#bed-mesh) for additional macros.
+> **Observação:**Veja o[seção opcional](#bed-mesh)para macros adicionais.
 
 > **Observação:**As otimizações da malha da cama são desativadas silenciosamente para impressoras delta.
 
@@ -690,13 +690,13 @@ argumentos.
 
 > **Observação:**Se você tem um`[homing_override]`seção que você precisará atualizar
 > qualquer`G28`comandos na parte gcode para usar`G28.6245197`em vez disso (que é
-> a versão renomeada do integrado do Klipper`G28`). Não fazer isso
+> a versão renomeada do integrado do Klipper`G28`). Deixar de fazer isso
 > causa`G28`comandos para errar com a mensagem**_Macro G28 chamada
 > recursivamente_**.
 
 #### `LAZY_HOME`
 
-Aloja os eixos especificados; por padrão, omite quaisquer eixos que já estejam na posição inicial.
+Inicia os eixos especificados; por padrão, omite quaisquer eixos que já estejam na posição inicial.
 
 -   `AXES`_(padrão: XYZ)_- Lista de eixos para casa.
 -   `LAZY`_(padrão: 1)_- Omite eixos já referenciados do procedimento de localização.
@@ -757,7 +757,7 @@ Estaciona o cabeçote da ferramenta.
 -   `P`_(padrão:`2`)_- Modo de estacionamento
     -   `P=0`- Se a posição Z atual for menor que o estacionamento Z, o bico será levantado
         para atingir a altura do parque Z
-    -   `P=1`- Não importa a posição Z atual, o bocal será levantado/abaixado para
+    -   `P=1`- Não importa a posição Z atual, o bico será levantado/abaixado para
         atingir a altura do parque Z.
     -   `P=2`- A altura do bico será aumentada pela quantidade de Z-park, mas nunca irá
         acima do limite de altura Z da máquina.
@@ -869,7 +869,7 @@ Estas são as opções de personalização que você pode adicionar ao seu`[gcod
     porcentagem de fluxo).
 
 -   `variable_start_purge_clearance`_(padrão: 5,0)_- Distância (em milímetros)
-    entre as linhas de purga e a área de impressão (se for`start_purge_length`é
+    entre as linhas de purga e a área de impressão (se um`start_purge_length`é
     oferecido).
 
 -   `variable_start_purge_length`_(padrão: 0,0)_- Comprimento do filamento (em
@@ -917,7 +917,7 @@ Aqui está um esqueleto de um`PRINT_START`substituir o wrapper:
 
       # Put macro code here to run after PRINT_START but before the print gcode
 
-> **Observação:**Você pode usar esse mesmo padrão para agrupar outras macros para
+> **Note:**Você pode usar esse mesmo padrão para agrupar outras macros para
 >   leve em conta personalizações específicas para sua impressora. Por exemplo. Se você tem um
 >   sonda acoplável que você pode optar por embrulhar`BED_MESH_CALIBRATE`com o
 >   comandos de encaixe/desencaixe apropriados.
@@ -926,7 +926,7 @@ Aqui está um esqueleto de um`PRINT_START`substituir o wrapper:
 
 O fatiador recomendado inicia quebras de gcode`PRINT_START`nas fases abaixo.
 Esta abordagem permite pausar ou cancelar e inserir gcode personalizado
-entre as fases (por exemplo, para definir LEDs de status, implantar/acoplar sondas, carregar filamento).
+entre as fases (por exemplo, para definir LEDs de status, implantar/encaixar sondas, carregar filamento).
 As fases são descritas na ordem abaixo:
 
 -   `_PRINT_START_PHASE_INIT`- Inicializa o`PRINT_START`configurações e começa
