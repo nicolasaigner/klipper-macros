@@ -1,5 +1,7 @@
 # klipper-macros
 
+> [Readme na versão PT-BR](https://github.com/nicolasaigner/klipper-macros/blob/develop/README.pt.md)
+
 This is a collection of macros for the
 [Klipper 3D printer firmware](https://github.com/Klipper3d/klipper). I
 originally created this repo just to have a consistent set of macros shared
