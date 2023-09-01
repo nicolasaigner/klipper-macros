@@ -282,7 +282,7 @@ problemas:
     a posição atual do bico, que incluirá o Z-hop se o bico estiver
     atualmente levantada. Isso significa que os gatilhos do gcode baseados em altura podem ser acionados antes
     esperado.
--   Cura's**Inserir na mudança de camada**dispara o`After`gatilho e depois o`Before`gatilho (ou seja, antes ou depois do_layer_, versus antes ou depois do_mudança de camada_). Essas macros e o PrusaSlicer fazem o oposto, que é
+-   Cura's**Inserir na mudança de camada**dispara o`After`gatilho e depois o`Before`gatilho (ou seja, antes ou depois do_camada_, versus antes ou depois do_mudança de camada_). Essas macros e o PrusaSlicer fazem o oposto, que é
     algo para ter em mente se você está acostumado com a forma como o Cura faz isso. Observe que estes
     macros usam um**Inserir na mudança de camada**script para forçar`LAYER`Comente
     geração, mas isso não afeta a ordem do gatilho.
