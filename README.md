@@ -1,273 +1,178 @@
-# klipper-macros
+# Conjunto de Macros para o Firmware de Impressora 3D Klipper
 
-This is a collection of macros for the
-[Klipper 3D printer firmware](https://github.com/Klipper3d/klipper). I
-originally created this repo just to have a consistent set of macros shared
-between my own 3D printers. But since I've found them useful, I thought other
-people might as well.
+Este é um repositório contendo um conjunto de macros desenvolvidas para o [firmware de impressora 3D Klipper](https://github.com/Klipper3d/klipper). A origem deste repositório é proporcionar um conjunto consistente de macros compartilhadas entre as minhas próprias impressoras 3D. No entanto, como achei essas macros úteis, pensei que outras pessoas também pudessem se beneficiar.
 
-## What can I do with these?
+## O que é possível fazer com essas macros?
 
-Most of these macros improve basic functionality (e.g. [selectable build sheets
-](#bed-surface)) and Klipper compatability with g-code targeting Marlin
-printers. However, there are also some nice extras:
+A maioria dessas macros tem como objetivo melhorar a funcionalidade básica (por exemplo, [superfícies de impressão selecionáveis](#superfície-da-cama)) e a compatibilidade do Klipper com códigos G direcionados para impressoras Marlin. Além disso, há alguns recursos extras interessantes:
 
-* **[Schedule commands at heights and layer changes](#layer-triggers)** -
-  This is similar to what your slicer can already do, but I find it simpler, and
-  you can schedule these commands while a print is active. As an example of
-  usage, I added an [LCD menu item](#lcd-menus) to pause the print at the next
-  layer change. This way the pause won't mar the print by e.g. pausing inside
-  an external perimeter.
-* **Dynamically scale [heaters](#heaters) and [fans](#fans)** - This makes it
-  easy to do things like persistently adjust fan settings during a live print,
-  or maintain simpler slicer profiles by moving things like a heater bump for a
-  hardened steel nozzle into state stored on the printer.
-* **Cleaner [LCD menu interface](#lcd-menus)** - I've simplified the menus and
-  provided a much easier way to customize materials in the LCD menu (or at least
-  I think so). I've also added confirmation dialogs for commands that would
-  abort an active print.
-* **[Optimized mesh bed leveling](#bed-mesh-improvements)** - Probes only within
-  the printed area, which can save a lot of time on smaller prints.
-* **[Automated purge lines](#draw_purge_line)** - Set the desired extrusion
-  length as `variable_start_purge_length` in your config and a correctly sized
-  set of purge lines will be extruded in front of the print area immediately
-  before the print starts.
+- **[Agendar comandos em alturas e mudanças de camada](#gatilhos-de-camada)** - Isso é semelhante ao que um fatiador já é capaz de fazer, mas de maneira mais simples. É possível agendar esses comandos durante uma impressão em andamento. Um exemplo de uso é a adição de um [item de menu LCD](#menus-lcd) para pausar a impressão na próxima mudança de camada. Isso evita que a pausa ocorra dentro de um perímetro externo e danifique a impressão.
+- **Escala dinamicamente [aquecedores](#aquecedores) e [ventoinhas](#ventoinhas)** - Isso facilita o ajuste persistente das configurações das ventoinhas durante a impressão em andamento. Também permite manter perfis de fatiamento mais simples, movendo ajustes como o aumento de temperatura para um bico de aço endurecido para o estado armazenado na impressora.
+- **Interface de menu LCD mais organizada** - Os menus foram simplificados e uma maneira mais fácil de personalizar materiais no menu LCD foi providenciada. Também foram adicionadas caixas de diálogo de confirmação para comandos que podem interromper uma impressão em andamento.
+- **[Nivelamento otimizado da cama de malha](#melhorias-na-malha-da-cama)** - Realiza sondagens apenas dentro da área impressa, economizando tempo em impressões menores.
+- **[Linhas de purga automatizadas](#desenhar_linha_de_purga)** - Defina o comprimento de extrusão desejado como `variable_start_purge_length` em sua configuração e um conjunto de linhas de purga será extrudado na frente da área de impressão imediatamente antes do início da impressão.
 
-## A few warnings...
+## Algumas observações importantes...
 
-* **BACK UP YOUR FULL CONFIG BEFORE MAKING ANY CHANGES!!!** I've seen so many
-  newcomers desperately looking for help on public forums because they didn't
-  have a good config to fall back to after messing up their current config while
-  experimenting with other people's macros. You'll save yourself and everyone
-  else a whole lot of time and nuisance if you just make sure you always have a
-  working config backed up.
-* **You really should avoid custom macros like this until you're comfortable
-  using Klipper with a basic config.** Advanced Klipper macros tend to rely
-  extensively on [monkey patching](https://en.wikipedia.org/wiki/Monkey_patch),
-  which can lead to problems with unusual configurations or when mixing macros
-  from various sources. So, you really want to know what you're doing before
-  including someone else's macros—particularly when including macros with
-  overlapping functionality from different sources.
-* You must have a `heater_bed`, `extruder`, and other [sections listed
-  below](#klipper-setup) configured, otherwise the macros will ***force a
-  printer shutdown at startup***. Unfortunately, the Klipper macro system
-  doesn't have a more graceful way of handling this sort of thing.
-* The multi-extruder and chamber heater functionality is very under-tested and
-  may have bugs, since I haven't used it much at all. Patches welcome.
-* There's probably other stuff I haven't used enough to test thoroughly, so use
-  these macros at your own risk.
+- **FAÇA UM BACKUP DE SUA CONFIGURAÇÃO COMPLETA ANTES DE REALIZAR QUAISQUER MUDANÇAS!!!** Já vi muitos iniciantes procurando desesperadamente ajuda em fóruns públicos porque não tinham uma boa configuração para retornar após terem comprometido sua configuração atual ao experimentar macros de outras pessoas. Ter uma configuração funcional armazenada vai economizar muito tempo e aborrecimento para você e para os outros.
+- **Evite macros personalizadas como essas até estar confortável em usar o Klipper com uma configuração básica.** Macros avançadas do Klipper normalmente dependem muito do [monkey patching](https://en.wikipedia.org/wiki/Monkey_patch), o que pode causar problemas com configurações incomuns ou quando macros de várias fontes são misturadas. Portanto, é recomendado ter conhecimento antes de incluir macros de terceiros, especialmente se elas possuem funcionalidades sobrepostas de diferentes fontes.
+- É necessário configurar uma `heater_bed`, `extruder` e outras [seções listadas abaixo](#configuração-do-klipper), caso contrário as macros **forçarão o desligamento da impressora durante a inicialização**. Infelizmente, o sistema de macros do Klipper não possui um método mais suave para lidar com essa situação.
+- A funcionalidade de múltiplos extrusores e aquecedores de câmara é pouco testada e pode conter bugs, já que não foi muito utilizada. Contribuições são bem-vindas.
+- É possível que existam outras partes não testadas o suficiente, portanto, utilize essas macros por sua própria conta e risco.
 
-# Troubleshooting
+## Solução de Problemas
 
-* Double check that you followed the [installation instructions](#installation)
-  and are not seeing any console or log errors.
-* Ensure that you're running the most current version of stock Klipper, and not
-  a fork or otherwise altered or outdated copy.
-* Ensure you're using the most current version of these macros and haven't
-  made changes to any files in the `klipper-macros` directory.
-* Ensure that you've restarted Klipper after any updates or config changes.
-* Run `CHECK_KM_CONFIG` in the Klipper console and fix any errors it reports
-  to the console and/or logs (it won't output anything if no config errors
-  were detected).
-* Run `_INIT_SURFACES` in the Klipper console to validate that bed surfaces are
-  being initialized without any errors reported to the console and/or logs.
-* Verify your slicer settings and review that the gcode output is correct. Pay
-  particular attention the initialization portions of the gcode and the
-  parameters passed to PRINT_START.
-* Look for similar issues and post troubleshooting questions in the [Github Q&A
-  Discussion](
-  https://github.com/jschuh/klipper-macros/discussions/categories/q-a).
+- Verifique se você seguiu as [instruções de instalação](#instalação) e se não há erros sendo exibidos no console ou nos logs.
+- Garanta que está utilizando a versão mais recente do Klipper original, e não uma versão modificada, desatualizada ou bifurcada.
+- Utilize a versão mais recente dessas macros e evite fazer alterações nos arquivos do diretório `klipper-macros`.
+- Reinicie o Klipper após qualquer atualização ou mudança na configuração.
+- Execute `CHECK_KM_CONFIG` no console do Klipper e corrija quaisquer erros que forem relatados no console e/ou logs (se nenhum erro de configuração for detectado, nenhum resultado será exibido).
+- Execute `_INIT_SURFACES` no console do Klipper para validar que as superfícies da cama estão sendo inicializadas sem erros relatados no console e/ou logs.
+- Verifique as configurações do fatiador e revise a saída do G-Code. Preste atenção especial às partes de inicialização do G-Code e aos parâmetros passados para PRINT_START.
+- Se encontrar problemas semelhantes, faça perguntas de solução de problemas na [Discussão de Perguntas e Respostas do Github](https://github.com/jschuh/klipper-macros/discussions/categories/q-a).
 
-# Reporting Bugs
+# Reportando Problemas
 
-If you've followed the troubleshooting steps and were unable to resolve the
-issue you can [report a bug via Github](
-https://github.com/jschuh/klipper-macros/issues/new/choose). I will probably
-respond within a few days (almost certainly within a week). I probably won't
-respond through other channels (e.g. Discord, Twitter), because I don't find
-them useful for handling bug reports.
+Se você seguiu os passos de solução de problemas e não conseguiu resolver o problema, você pode [reportar um bug pelo Github](https://github.com/jschuh/klipper-macros/issues/new/choose). Eu provavelmente vou responder em alguns dias (quase certamente dentro de uma semana). Eu provavelmente não vou responder por outros canais (como Discord, Twitter), pois não os acho úteis para lidar com relatórios de bugs.
 
-Some important things to remember when reporting bugs:
+Algumas coisas importantes para lembrar ao reportar bugs:
 
-* **Paste the full text of the command that triggered the error, along with any
-  error messages printed to the console** and relevant sections of the klipper
-  logs if appropriate (and please [format this text as code](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#quoting-code),
-  otherwise Github will format it like a ransom note).
-* **Attach your config to the bug report.** There's generally no way to diagnose
-  anything without the configs.
-* **Verify that your issue reproduces on the current, stock installation of
-  Klipper and klipper-macros.** Non-stock configurations and outdated versions
-  make diagnosis nearly impossible.
-* Please don't treat bug reports as a substitute for following the installation
-  and troubleshooting instructions.
-* Please direct feature requests to the [Github Ideas Discussion](
-  https://github.com/jschuh/klipper-macros/discussions/categories/ideas).
+- **Cole o texto completo do comando que gerou o erro, juntamente com quaisquer mensagens de erro exibidas no console**, além das seções relevantes dos logs do Klipper, se apropriado (e por favor, [formate esse texto como código](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#quoting-code), caso contrário o Github vai formatá-lo como um bilhete de resgate).
+- **Anexe sua configuração ao relatório de bug.** Geralmente, não é possível diagnosticar qualquer coisa sem as configurações.
+- **Verifique se o problema ocorre na instalação atual padrão do Klipper e klipper-macros.** Configurações personalizadas e versões desatualizadas dificultam muito o diagnóstico.
+- Por favor, não trate relatórios de bugs como um substituto para seguir as instruções de instalação e solução de problemas.
+- Direcione pedidos de recursos para a [Discussão de Ideias do Github](https://github.com/jschuh/klipper-macros/discussions/categories/ideas).
 
-> **Note:** Reports that do not follow the above guidelines _**will likely be
-> closed without any other action taken.**_
+> **Nota:** Relatórios que não seguirem as diretrizes acima _**provavelmente serão fechados sem qualquer outra ação.**_
 
-# Contributing
+# Contribuindo
 
-I'm happy to accept bugfix PRs. I'm also potentially open to accepting new
-features or additions. However, I may decline the PR if it's something I'm not
-interested in or just looks like it would be a hassle for me to maintain.
+Fico feliz em aceitar PRs de correção de bugs. Também estou potencialmente aberto a receber novos recursos ou adições. No entanto, posso recusar o PR se for algo que não me interesse ou se parecer que seria uma complicação para eu manter.
 
-## Formatting
+## Formatação
 
-There's no standard style for Klipper macros, so please just try to follow the
-style in the files. That stated, here are a few rules to remember:
+Não há um estilo padrão para macros do Klipper, então tente seguir o estilo dos arquivos. No entanto, aqui estão algumas regras a serem lembradas:
 
- * Wrap at 80 characters if at all possible
- * Indent 2 spaces, and in line with the logical block when wrapping (no tabs)
- * Prefix internal macros with `_` or `_km_`
- * Prefix any sort of global state with `_KM_` (e.g. `_KM_SAVE_GCODE_STATE`)
+- Limite as linhas a 80 caracteres, se possível
+- Indente 2 espaços e mantenha a mesma linha com o bloco lógico ao quebrar linhas (sem tabulações)
+- Prefixe macros internas com `_` ou `_km_`
+- Prefixe qualquer tipo de estado global com `_KM_` (por exemplo, `_KM_SAVE_GCODE_STATE`)
 
-## Commit Messages
+## Mensagens de Commit
 
-These are the rules for commit messages, but you can also just look at the
-commit log and follow the observed pattern:
+Essas são as regras para mensagens de commit, mas você também pode simplesmente olhar o log de commits e seguir o padrão observado:
 
- * Use the 50/72 rule for commit messages: No more than 50 characters in the
-   title and break lines in the description at 72 characters.
- * Begin the title with the module name (usually the main file being modified,
-   minus any extension) followed by a colon.
- * Title-only commit messages are fine for simple commits, but be sure to
-   include a blank line after the title.
- * Squash multiple commits if what you're working on makes more sense as a
-   single logical commit. _This might require you to do a force push on an open
-   PR._
+- Use a regra 50/72 para mensagens de commit: No máximo 50 caracteres no título e quebre as linhas na descrição em 72 caracteres.
+- Comece o título com o nome do módulo (geralmente o arquivo principal sendo modificado, excluindo qualquer extensão) seguido por dois pontos.
+- Mensagens de commit apenas com título são aceitáveis para commits simples, mas certifique-se de incluir uma linha em branco após o título.
+- Combine commits múltiplos se o que você está trabalhando fizer mais sentido como um único commit lógico. _Isso pode exigir um push forçado em um PR aberto._
 
-# Installation
+# Instalação
 
-To install the macros, first clone this repository inside of your
-`printer_data/config` directory with the following command.
+Para instalar as macros, primeiro clone este repositório dentro do diretório `printer_data/config` com o seguinte comando:
 
-```
+```shell
 git clone https://github.com/jschuh/klipper-macros.git
 ```
+Depois, cole as seções abaixo no seu arquivo `printer.cfg` para começar. Ou até melhor, cole tudo em um arquivo separado no mesmo caminho da sua configuração e inclua esse arquivo. Isso facilitará caso queira remover essas macros no futuro.
 
-Then paste the below sections into your `printer.cfg` to get started. Or even
-better, paste all of it into a seperate file in the same path as your config,
-and include that file. That will make it easier if you want to remove these
-macros in the future.
+Você talvez precise personalizar algumas configurações para a sua própria configuração. Todas as configurações configuráveis estão em [globals.cfg](globals.cfg#L5) e podem ser sobrescritas criando uma variável correspondente com um novo valor na sua seção `[gcode_macro _km_options]`. **Não modifique diretamente as declarações de variáveis em globals.cfg.** A inicialização das macros assume certos valores padrão, e modificações diretas provavelmente causarão problemas de formas muito inesperadas.
 
-You may need to customize some settings for your own config. All configurable
-settings are in [globals.cfg](globals.cfg#L5), and can be overridden by creating
-a corresponding variable with a new value in your `[gcode_macro _km_options]`
-section. _**Do not directly modify the variable declarations in globals.cfg.**_
-The macro initialization assumes certain default values, and direct
-modifications are likely to break things in very unexpected ways.
+> **Nota:** Os caminhos neste README seguem a [estrutura de pastas de dados do Moonraker](https://moonraker.readthedocs.io/en/latest/installation/#data-folder-structure). Você talvez precise alterá-los se estiver usando uma estrutura diferente.
 
-> **Note:**  The paths in this README follow [Moonraker's data folder structure.
-> ](https://moonraker.readthedocs.io/en/latest/installation/#data-folder-structure)
-> You may need to change them if you are using a different structure.
+> **Nota:** Certifique-se de que atualmente não possui macros que ofereçam a mesma função básica das macros neste repositório (por exemplo, as macros padrão do [Mainsail](https://docs.mainsail.xyz/configuration#macros) ou [fluidd](https://docs.fluidd.xyz/configuration/initial_setup#macros)). Como regra, evite usar vários conjuntos de macros que substituam a mesma macro base (a menos que realmente saiba o que está fazendo), pois macros conflitantes podem causar diversos problemas estranhos e frustrantes.
 
-> **Note:** Make sure you don't currently have any macros that provide the same
-> basic function as the macros in this repository (e.g. the default
-> [Mainsail](https://docs.mainsail.xyz/configuration#macros) or
-> [fluidd](https://docs.fluidd.xyz/configuration/initial_setup#macros) macros).
-> As a rule, you should avoid using multiple sets of macros that override the
-> same base macro (unless you really know what you're doing) because conflicting
-> macros can cause all sorts of weird and frustrating problems. 
+> **Nota:** Se você tiver uma seção `[homing_override]`, precisará atualizar quaisquer comandos `G28` na parte do G-Code para usar `G28.6245197` em vez disso (que é a versão renomeada do `G28` incorporado ao Klipper). Não fazer isso causará erro nos comandos `G28` com a mensagem ***Macro G28 chamada recursivamente***.
 
-> **Note:** If you have a `[homing_override]` section you will need to update
-> any `G28` commands in the gcode part to use `G28.6245197` instead (which is
-> the renamed version of Klipper's built-in `G28`). Failure to do this will
-> cause `G28` commands to error out with the message ***Macro G28 called
-> recursively***.
-
-# Klipper Setup
+# Configuração do Klipper
 
 ```
-# All customizations are documented in globals.cfg. Just copy a variable from
-# there into the section below, and change the value to meet your needs.
+# Todas as personalizações estão documentadas em globals.cfg. Basta copiar uma variável de
+# na seção abaixo e altere o valor para atender às suas necessidades.
 
 [gcode_macro _km_options]
-# These are examples of some likely customizations:
-# Any sheets in the below list will be available with a configurable offset.
+# Estes são exemplos de algumas personalizações prováveis:
+# Todas as folhas da lista abaixo estarão disponíveis com deslocamento configurável.
 #variable_bed_surfaces: ['smooth_1','texture_1']
-# Length (in mm) of filament to load (bowden tubes will be longer).
+# Comprimento (em mm) do filamento a carregar (os tubos Bowden serão mais longos).
 #variable_load_length: 90.0
-# Hide the Octoprint LCD menu since I don't use it.
+# Oculte o menu LCD do Octoprint, pois não o uso.
 #variable_menu_show_octoprint: False
-# Customize the filament menus (up to 10 entries).
+# Personalize os menus de filamentos (até 10 entradas).
 #variable_menu_temperature: [
 #  {'name' : 'PLA',  'extruder' : 200.0, 'bed' : 60.0},
 #  {'name' : 'PETG', 'extruder' : 230.0, 'bed' : 85.0},
 #  {'name' : 'ABS',  'extruder' : 245.0, 'bed' : 110.0, 'chamber' : 60}]
-# Length of filament (in millimeters) to purge at print start.
-#variable_start_purge_length: 30 # This value works for most setups.
-gcode: # This line is required by Klipper.
-# Any code you put here will run at klipper startup, after the initialization
-# for these macros. For example, you could uncomment the following line to
-# automatically adjust your bed surface offsets to account for any changes made
-# to your Z endstop or probe offset.
+# Comprimento do filamento (em milímetros) a ser eliminado no início da impressão.
+#variable_start_purge_length: 30 # Este valor funciona para a maioria das configurações.
+gcode: # Esta linha é exigida pelo Klipper.
+# Qualquer código que você colocar aqui será executado na inicialização do klipper, após a inicialização
+# para essas macros. Por exemplo, você poderia descomentar a seguinte linha para
+# ajusta automaticamente os deslocamentos da superfície da cama para levar em conta quaisquer alterações feitas
+# ao seu fim de curso Z ou deslocamento da sonda.
 #  ADJUST_SURFACE_OFFSETS
 
-# This line includes all the standard macros.
+# Esta linha inclui todas as macros padrão.
 [include klipper-macros/*.cfg]
-# Uncomment to include features that require specific hardware support.
-# LCD menu support for features like bed surface selection and pause next layer.
+# Remova o comentário para incluir recursos que requerem suporte de hardware específico.
+# Suporte ao menu LCD para recursos como seleção da superfície da cama e pausa na próxima camada.
 #[include klipper-macros/optional/lcd_menus.cfg]
-# Optimized bed leveling
+# Nivelamento otimizado da cama
 #[include klipper-macros/optional/bed_mesh.cfg]
 
-# The sections below here are required for the macros to work. If your config
-# already has some of these sections you should merge the duplicates into one
-# (or if they are identical just remove one of them).
+# As seções abaixo são necessárias para que as macros funcionem. Se sua configuração
+# já possui algumas dessas seções, você deve mesclar as duplicatas em uma
+# (ou se forem idênticos basta remover um deles).
 [idle_timeout]
 gcode:
-  _KM_IDLE_TIMEOUT # This line must be in your idle_timeout section.
+  _KM_IDLE_TIMEOUT # Esta linha deve estar na sua seção idle_timeout.
 
 [pause_resume]
 
 [respond]
 
 [save_variables]
-filename: ~/printer_data/variables.cfg # UPDATE THIS FOR YOUR PATH!!!
+filename: ~/printer_data/variables.cfg # ATUALIZE ISSO PARA SEU CAMINHO!!!
 
 [virtual_sdcard]
-path: ~/gcode_files # UPDATE THIS FOR YOUR PATH!!!
+path: ~/gcode_files # ATUALIZE ISSO PARA SEU CAMINHO!!!
 on_error_gcode: CANCEL_PRINT
 
 [display_status]
 ```
 
-## Slicer Configuration
+## Configuração do Slicer
 
 ### PrusaSlicer / SuperSlicer
 
-PrusaSlicer and its variants are fairly easy to configure. Just open **Printer
-Settings → Custom G-code** for your Klipper printer and paste the below text
-into the relevant sections.
+O PrusaSlicer e suas variantes são relativamente fáceis de configurar. Basta abrir **Configurações da Impressora → Custom G-code** para a sua impressora Klipper e colar o texto abaixo nas seções relevantes.
 
-#### Start G-code
+#### Código de Início (Start G-code)
 
 ```
-M190 S0 ; Remove this if autoemit_temperature_commands is off in Prusa Slicer 2.6 and later
-M109 S0 ; Remove this if autoemit_temperature_commands is off in Prusa Slicer 2.6 and later
-_PRINT_START_PHASE_INIT EXTRUDER={first_layer_temperature[initial_tool]} BED=[first_layer_bed_temperature] MESH_MIN={first_layer_print_min[0]},{first_layer_print_min[1]} MESH_MAX={first_layer_print_max[0]},{first_layer_print_max[1]} LAYERS={total_layer_count} NOZZLE_SIZE={nozzle_diameter[0]}
-; Insert custom gcode here.
+M190 S0 ; Remova isso se autoemit_temperature_commands estiver desativado no Prusa Slicer 2.6 e posterior
+M109 S0 ; Remova isso se autoemit_temperature_commands estiver desativado no Prusa Slicer 2.6 e posterior
+_PRINT_START_PHASE_INIT EXTRUSORA={first_layer_temperature[initial_tool]} MESA=[first_layer_bed_temperature] MESH_MIN={first_layer_print_min[0]},{first_layer_print_min[1]} MESH_MAX={first_layer_print_max[0]},{first_layer_print_max[1]} CAMADAS={total_layer_count} TAMANHO_DO_BICO={nozzle_diameter[0]}
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_PREHEAT
-; Insert custom gcode here.
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_PROBING
-; Insert custom gcode here.
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_EXTRUDER
-; Insert custom gcode here.
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_PURGE
 
-; This is the place to put slicer purge lines if you haven't set a non-zero
-; variable_start_purge_length to have START_PRINT automatically calculate and 
-; perform the purge (e.g. if using a Mosaic Palette, which requires the slicer
-; to generate the purge).
+; Este é o lugar para colocar as linhas de purga do slicer se você não tiver definido um comprimento de purga não nulo
+; variable_start_purge_length para que START_PRINT calcule e execute automaticamente a purga (por exemplo, se estiver usando um Mosaic Palette,
+; que exige que o slicer gere a purga).
 ```
 
-#### Additional SuperSlicer Start G-code
+#### G-Code adicional de início do SuperSlicer
 
-If you're using SuperSlicer you can add the following immediately before the
-`PRINT_START` line from above. This will perform some added bounds checking and
-will allow you to use the random print relocation feature without requiring
-`exclude_object` entries in the print file.
+Se estiver usando o SuperSlicer, você pode adicionar o seguinte imediatamente antes do
+Linha `PRINT_START` acima. Isso executará algumas verificações adicionais de limites e
+permitirá que você use o recurso de realocação aleatória de impressão sem a necessidade
+Entradas `exclude_object` no arquivo de impressão.
 
 ```
 PRINT_START_SET MODEL_MIN={bounding_box[0]},{bounding_box[1]} MODEL_MAX={bounding_box[3]},{bounding_box[4]}
@@ -279,7 +184,7 @@ PRINT_START_SET MODEL_MIN={bounding_box[0]},{bounding_box[1]} MODEL_MAX={boundin
 PRINT_END
 ```
 
-#### Before layer change G-code
+#### Antes da mudança de camada do G-Code
 
 ```
 ;BEFORE_LAYER_CHANGE
@@ -287,7 +192,7 @@ PRINT_END
 BEFORE_LAYER_CHANGE HEIGHT=[layer_z] LAYER=[layer_num]
 ```
 
-#### After layer change G-code
+#### Após mudança de camada G-Code
 
 ```
 ;AFTER_LAYER_CHANGE
@@ -297,65 +202,64 @@ AFTER_LAYER_CHANGE
 
 ### Ultimaker Cura
 
-Cura is a bit more difficult to configure, and it comes with the following known
-issues:
+Cura é um pouco mais difícil de configurar e vem com os seguintes recursos conhecidos
+problemas:
 
-- Cura doesn't have proper placeholders for before and after layer changes, so
-  the before triggers all fire and are followed immediately by the after
-  triggers, all of which happens inside the layer change. This probably doesn't
-  matter, but it does mean that you can't use the before and after triggers to
-  avoid running code in the layer change.
-- Cura doesn't provide the Z-height of the current layer, so it's inferred from
-  the current nozzle position, which will include the Z-hop if the nozzle is
-  currently raised. This means height based gcode triggers may fire earlier than
-  expected.
-- Cura's **Insert at layer change** fires the `After` trigger and then the
-  `Before` trigger (i.e before or after the *layer*, versus before or after the
-  *layer change*). These macros and PrusaSlicer do the opposite, which is
-  something to keep in mind if you're used to how Cura does it. Note that these
-  macros do use an  **Insert at layer change** script to force `LAYER` comment
-  generation, but that doesn't affect the trigger ordering.
-- Cura does not provide the first layer bounding rectangle, only the model
-  bounding volume. This means the XY bounding box used to speed up mesh probing
-  may be larger than it needs to be, resulting in bed probing that's not as fast
-  as it could be. 
+- O Cura não possui espaços reservados adequados para antes e depois das alterações de camada, então
+   o antes desencadeia todo o fogo e é seguido imediatamente pelo depois
+   gatilhos, tudo isso acontece dentro da mudança de camada. Isso provavelmente não
+   importa, mas significa que você não pode usar os gatilhos antes e depois para
+   evite executar código na mudança de camada.
+- O Cura não fornece a altura Z da camada atual, então é inferido
+   a posição atual do bico, que incluirá o Z-hop se o bico estiver
+   atualmente levantada. Isso significa que os gatilhos do gcode baseados em altura podem ser acionados antes
+   esperado.
+- **Inserir na mudança de camada** do Cura dispara o gatilho `After` e então o
+   Gatilho `Before` (ou seja, antes ou depois da *camada*, versus antes ou depois do
+   *mudança de camada*). Essas macros e o PrusaSlicer fazem o oposto, que é
+   algo para ter em mente se você está acostumado com a forma como o Cura faz isso. Observe que estes
+   macros usam um script **Inserir na mudança de camada** para forçar o comentário `LAYER`
+   geração, mas isso não afeta a ordem do gatilho.
+- Cura não fornece o retângulo delimitador da primeira camada, apenas o modelo
+   volume limite. Isso significa que a caixa delimitadora XY é usada para acelerar a sondagem da malha
+   pode ser maior do que o necessário, resultando em uma sondagem do leito que não é tão rápida
+   como poderia ser.
 
-Accepting the caveats, the macros work quite well with Cura if you follow the
-configuration steps listed below.
-
+Aceitando as advertências, as macros funcionam muito bem com o Cura se você seguir as instruções
+etapas de configuração listadas abaixo.
 #### Start G-code
 
 ```
 M190 S0
 M109 S0
-_PRINT_START_PHASE_INIT EXTRUDER={material_print_temperature_layer_0} BED={material_bed_temperature_layer_0} NOZZLE_SIZE={machine_nozzle_size}
-; Insert custom gcode here.
+_PRINT_START_PHASE_INIT EXTRUSORA={material_print_temperature_layer_0} MESA={material_bed_temperature_layer_0} TAMANHO_DO_BICO={machine_nozzle_size}
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_PREHEAT
-; Insert custom gcode here.
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_PROBING
-; Insert custom gcode here.
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_EXTRUDER
-; Insert custom gcode here.
+; Insira o gcode personalizado aqui.
 _PRINT_START_PHASE_PURGE
 
-; This is the place to put slicer purge lines if you haven't set a non-zero
-; variable_start_purge_length to have START_PRINT automatically calculate and 
-; perform the purge (e.g. if using a Mosaic Palette, which requires the slicer
-; to generate the purge).
+; Este é o local para colocar as linhas de purga do slicer se você não tiver definido um comprimento de purga não nulo
+; variable_start_purge_length para que START_PRINT calcule e execute automaticamente a purga (por exemplo, se estiver usando um Mosaic Palette,
+; que exige que o slicer gere a purga).
+
 ```
 
-#### End G-code
+#### Fim do G-Code
 
 ```
 PRINT_END
 ```
 
-#### Post Processing Plugin
+#### Plug-in de pós-processamento
 
-Use the menu item for **Extensions → Post Processing → Modify G-Code** to
-open the **Post Processing Plugin** and add the following four scripts. *The
-scripts must be run in the order listed below and be sure to copy the strings
-exactly, with no leading or trailing spaces.*
+Use o item de menu **Extensões → Pós-processamento → Modificar G-Code** para
+abra o **Plugin de pós-processamento** e adicione os quatro scripts a seguir. *O
+os scripts devem ser executados na ordem listada abaixo e certifique-se de copiar as strings
+exatamente, sem espaços iniciais ou finais.*
 
 ##### Search and Replace
 
@@ -382,70 +286,70 @@ exactly, with no leading or trailing spaces.*
 
 ## Moonraker Configuration
 
-Once you have the macros working and are comfortable using them, you can have
-Moonraker keep them up to date by adding the following into your
+Depois de ter as macros funcionando e se sentir confortável em usá-las, você pode ter
+Moonraker mantenha-os atualizados adicionando o seguinte em seu
 `moonraker.conf`.
 
 ```
 [update_manager klipper-macros]
 type: git_repo
 origin: https://github.com/jschuh/klipper-macros.git
-path: ~/printer_data/config/klipper-macros # UPDATE THIS FOR YOUR PATH!!!
+path: ~/printer_data/config/klipper-macros # ATUALIZE ISSO PARA O SEU CAMINHO!!!
 primary_branch: main
 is_system_service: False
 managed_services: klipper
 ```
 
-> **Note:** I'd advise against adding the auto-update entries to Moonraker until
-> you have everything working well, because it can make uninstallation a bit
-> harder due to Moonraker's autoupdate behavior.
+> **Nota:** Eu desaconselho adicionar as entradas de atualização automática ao Moonraker até
+>você tem tudo funcionando bem, pois pode dificultar um pouco a desinstalação
+> mais difícil devido ao comportamento de atualização automática do Moonraker.
 
-## Removal
+## Remoção
 
-If you choose to uninstall these macros you basically need to reverse the
-installation steps. However, the most critical parts are listed below.
+Se você optar por desinstalar essas macros, basicamente precisará reverter o processo.
+etapas de instalação. No entanto, as partes mais críticas estão listadas abaixo.
 
-### Klipper Configuration Removal
+### Remoção da configuração do Klipper
 
-Ensure that you remove the following from your Klipper config (and any included
-configs):
+Certifique-se de remover o seguinte da configuração do Klipper (e qualquer
+configurações):
 
-* The full `[gcode_macro _km_options]` section
-* Any `include` sections with `klipper-macros` in the path
-* `_KM_IDLE_TIMEOUT` in the `[idle_timeout]` section
-
-If you do not have Moonraker autoupdates configured you can delete the
-`klipper-macros` directory with something like the following command (adjusted
-for your own paths):
+* A seção completa `[gcode_macro _km_options]`
+* Quaisquer seções `include` com `klipper-macros` no caminho
+* `_KM_IDLE_TIMEOUT` na seção `[idle_timeout]`
+* 
+Se você não tiver as atualizações automáticas do Moonraker configuradas, você pode excluir o
+diretório `klipper-macros` com algo como o seguinte comando (ajustado
+para seus próprios caminhos):
 
 ```
 rm -rf ~/printer_data/config/klipper-macros
 ```
 
-### Slicer Configuration Removal
+### Remoção da configuração do Slicer
 
-If you do not want to change your slicer config, you should be able to leave
-it as is, because it generates only a small amount of additional gcode, and the
-basic parameters should work with any other `PRINT_START` macros. 
+Se você não quiser alterar a configuração do seu slicer, você poderá sair
+como está, porque gera apenas uma pequena quantidade de gcode adicional, e o
+parâmetros básicos devem funcionar com qualquer outra macro `PRINT_START`.
 
-## Moonraker Configuration Removal
+## Remoção da configuração do Moonraker
 
-If you've configured Moonraker auto-updates you will need to remove the entire
-`[update_manager klipper-macros]` section and restart moonraker prior to
-deleting the `klipper-macros` directory, otherwise Moonraker may attempt to
-recreate it. You may also find that it takes a few Moonraker update checks and
-restarts before the klipper-macros section disappears from the UI.
+Se você configurou as atualizações automáticas do Moonraker, você precisará remover todo o
+seção `[update_manager klipper-macros]` e reinicie o moonraker antes de
+excluindo o diretório `klipper-macros`, caso contrário o Moonraker pode tentar
+recrie-o. Você também pode descobrir que são necessárias algumas verificações de atualização do Moonraker e
+reinicia antes que a seção klipper-macros desapareça da IU.
 
-# Command Reference
+# Referência de comando
 
-## Customization
+## Costumização
 
-All features are configured by setting `variable_` values in the 
-`[gcode_macro _km_options]` section. All available variables and their purpose
-are listed in [globals.cfg](globals.cfg#L5).
+Todos os recursos são configurados definindo valores `variable_` no
+Seção `[gcode_macro _km_options]`. Todas as variáveis disponíveis e sua finalidade
+estão listados em [globals.cfg](globals.cfg#L5).
 
-> **Note:** `PRINT_START` specific customizations are [covered in more detail
-  below](#print-start-and-end).
+> **Observação:** personalizações específicas de `PRINT_START` são [abordadas com mais detalhes
+   abaixo](#print-start-and-end).
 
 ### Bed Mesh Improvements
 
